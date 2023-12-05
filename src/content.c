@@ -1,31 +1,31 @@
+#include <string.h>
 #include <unistd.h>
 
 #include "cmas.h"
 
 void write_statusline(int fd)
 {
-    write(fd, "HTTP/1.1 200 OK\r\n", 17);
+    const char *sl = "HTTP/1.1 200 OK\r\n";
+    write(fd, sl, strlen(sl));
 }
 
 void write_ct_header(int fd)
 {
-    write(fd, "Content-Type: text/html\r\n", 25);
+    const char *ct = "Content-Type: text/html\r\n";
+    write(fd, ct, strlen(ct));
 }
 
 void write_cl_header(int fd)
 {
     // both responses are 20 chars
-    write(fd, "Content-Length: 20\r\n", 20);
+    const char *cl = "Content-Length: 20\r\n";
+    write(fd, cl, strlen(cl));
 }
 
 void write_content(int fd)
 {
-    write(fd, "\r\n", 2);
+    char *cnt =
+        cmas() ? "\r\nIt's Christmas!!!!\r\n" : "\r\nIt's not Christmas\r\n";
 
-    if (cmas())
-    {
-        write(fd, "It's Christmas!!!!\r\n", 20);
-    }
-
-    write(fd, "It's not Christmas\r\n", 20);
+    write(fd, cnt, strlen(cnt));
 }
