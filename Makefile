@@ -17,6 +17,9 @@ build/content.o: src/content.c src/content.h
 build/cmas.o: src/cmas.c src/cmas.h
 	$(cc) -c src/cmas.c -o build/cmas.o
 
+configure:
+	mkdir -p build
+
 clean:
 	rm -rf build
 	mkdir build
