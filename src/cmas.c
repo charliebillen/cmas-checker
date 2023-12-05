@@ -1,7 +1,5 @@
 #include <time.h>
 
-#include "cmas.h"
-
 int cmas()
 {
     time_t t = time(NULL);

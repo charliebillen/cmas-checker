@@ -1,7 +1,6 @@
 #include <unistd.h>
 
 #include "cmas.h"
-#include "content.h"
 
 void write_statusline(int fd)
 {

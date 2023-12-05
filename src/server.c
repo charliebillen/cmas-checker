@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "content.h"
-#include "server.h"
 
 static int srv_fd = 0;
 static int cli_fd = 0;
