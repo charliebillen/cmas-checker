@@ -1,19 +1,23 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
 #include "content.h"
 #include "server.h"
 
-errno_t errno = 0;
 static int srv_fd = 0;
+static int cli_fd = 0;
 
 int bind_srv()
 {
     srv_fd = socket(AF_INET, SOCK_STREAM, 0);
 
+    // TOOD: Why am I awlays getting a random port?
+    // TODO: Why is it ignoring addr and binding? to *
     int port = 3000;
     char *addr = "127.0.0.1";
     struct sockaddr_in srv_addr = {AF_INET, htonl(port), inet_addr(addr)};
@@ -21,7 +25,7 @@ int bind_srv()
 
     if (bind_r < 0)
     {
-        printf("%d %d\n", bind_r, errno);
+        printf("Could not bind\n");
         return bind_r;
     }
 
@@ -31,15 +35,9 @@ int bind_srv()
     return 0;
 }
 
-void close_srv()
-{
-    printf("Stopping\n");
-    close(srv_fd);
-}
-
 void handle_conn()
 {
-    int cli_fd = accept(srv_fd, 0, 0);
+    cli_fd = accept(srv_fd, 0, 0);
     printf("\tConnection\n");
 
     write_statusline(cli_fd);
@@ -50,18 +48,35 @@ void handle_conn()
     close(cli_fd);
 }
 
+void stop_srv()
+{
+    close(cli_fd);
+    close(srv_fd);
+
+    printf("Stopping\n");
+    exit(0);
+}
+
+void kill_srv(int sig)
+{
+    printf("Caught %d sig. Wizard was hit for 5hp!\n", sig);
+    stop_srv();
+}
+
 void serve()
 {
-    int bind_r = bind_srv();
+    signal(SIGINT, kill_srv);
+    signal(SIGTERM, kill_srv);
 
-    if (bind_r == 0)
+    int bind_r = bind_srv();
+    if (bind_r < 0)
     {
-        while (1)
-        {
-            handle_conn();
-        }
+        printf("Could not start server\n");
+        stop_srv();
     }
 
-    // TODO: make sure this runs on CTRL+C
-    close_srv();
+    while (1)
+    {
+        handle_conn();
+    }
 }
