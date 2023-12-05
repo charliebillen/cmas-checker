@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
 
+#include "cmas.h"
 #include "content.h"
 
 void write_statusline(int fd)
@@ -23,12 +21,9 @@ void write_cl_header(int fd)
 
 void write_content(int fd)
 {
-    time_t t = time(NULL);
-    struct tm *dt = localtime(&t);
-
     write(fd, "\n", 1);
 
-    if (dt->tm_mday == 25 && dt->tm_mon == 11)
+    if (cmas())
     {
         write(fd, "It's Christmas!!!!\n", 19);
     }
