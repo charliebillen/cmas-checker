@@ -32,7 +32,7 @@ int bind_srv()
         return bind_r;
     }
 
-    listen(srv_fd, 10);
+    listen(srv_fd, 1);
     printf("Listening\n");
 
     return 0;

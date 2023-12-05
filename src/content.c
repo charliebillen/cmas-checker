@@ -11,7 +11,7 @@ void write_statusline(int fd)
 
 void write_ct_header(int fd)
 {
-    const char *ct = "Content-Type: text/html\r\n";
+    const char *ct = "Content-Type: text/plain; charset=utf-8\r\n";
     write(fd, ct, strlen(ct));
 }
 
