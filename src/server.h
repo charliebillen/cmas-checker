@@ -1,1 +1,1 @@
-void serve();
+void serve(int port, char *addr);

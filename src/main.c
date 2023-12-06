@@ -2,6 +2,6 @@
 
 int main()
 {
-    serve();
+    serve(3000, "127.0.0.1");
     return 0;
 }

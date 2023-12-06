@@ -12,35 +12,53 @@
 static int srv_fd = 0;
 static int cli_fd = 0;
 
-int bind_srv()
+int bind_srv(int port, char *addr)
 {
     srv_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    int port = 3000;
-    char *addr = "127.0.0.1";
+    if (srv_fd < 0)
+    {
+        perror("Could not open socket\n");
+        return -1;
+    }
 
     struct sockaddr_in srv_addr;
     memset(&srv_addr, 0, sizeof(srv_addr));
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_port = htons(port);
-    inet_pton(AF_INET, addr, &(srv_addr.sin_addr));
-    int bind_r = bind(srv_fd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
 
-    if (bind_r < 0)
+    if (inet_pton(AF_INET, addr, &(srv_addr.sin_addr)) < 1)
     {
-        printf("Could not bind\n");
-        return bind_r;
+        perror("Invalid address\n");
+        return -1;
     }
 
-    listen(srv_fd, 1);
-    printf("Listening\n");
+    if (bind(srv_fd, (struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0)
+    {
+        perror("Could not bind to port/address\n");
+        return -1;
+    }
 
+    if (listen(srv_fd, 1) < 0)
+    {
+        perror("Could not listen for connections\n");
+        return -1;
+    }
+
+    printf("Listening\n");
     return 0;
 }
 
 void handle_conn()
 {
     cli_fd = accept(srv_fd, 0, 0);
+
+    if (cli_fd < 0)
+    {
+        perror("Could not accept connection\n");
+        return;
+    }
+
     printf("\tConnection\n");
 
     write_statusline(cli_fd);
@@ -60,22 +78,21 @@ void stop_srv()
     exit(0);
 }
 
-void kill_srv(int sig)
+void kill_srv(int _)
 {
-    printf("Caught %d sig. Wizard was hit for 5hp!\n", sig);
+    printf("Wizard was hit for 5hp!\n");
     stop_srv();
 }
 
-void serve()
+void serve(int port, char *addr)
 {
     signal(SIGINT, kill_srv);
     signal(SIGTERM, kill_srv);
+    signal(SIGKILL, kill_srv);
 
-    int bind_r = bind_srv();
-
-    if (bind_r < 0)
+    if (bind_srv(port, addr) < 0)
     {
-        printf("Could not start server\n");
+        perror("Could not start server\n");
         stop_srv();
     }
 
@@ -83,6 +100,4 @@ void serve()
     {
         handle_conn();
     }
-
-    stop_srv();
 }
