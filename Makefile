@@ -24,8 +24,8 @@ clean:
 	rm -rf build
 	mkdir build
 
-start:
+start: build/main
 	./build/main
 
 curl:
-	curl localhost:3000
+	curl -v localhost:3000

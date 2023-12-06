@@ -5,7 +5,7 @@
 
 void write_statusline(int fd)
 {
-    const char *sl = "HTTP/1.1 200 OK\r\n";
+    const char *sl = "HTTP/1.0 200 OK\r\n";
     write(fd, sl, strlen(sl));
 }
 
@@ -20,6 +20,13 @@ void write_cl_header(int fd)
     // both responses are 20 chars
     const char *cl = "Content-Length: 20\r\n";
     write(fd, cl, strlen(cl));
+}
+
+void write_link_header(int fd)
+{
+    // try and stop favicon requests
+    const char *l = "Link: <#>; rel=\"icon\"\r\n";
+    write(fd, l, strlen(l));
 }
 
 void write_content(int fd)

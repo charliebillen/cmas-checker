@@ -64,6 +64,7 @@ void handle_conn()
     write_statusline(cli_fd);
     write_ct_header(cli_fd);
     write_cl_header(cli_fd);
+    write_link_header(cli_fd);
     write_content(cli_fd);
 
     close(cli_fd);
